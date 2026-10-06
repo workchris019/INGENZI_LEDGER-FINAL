@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingenzi Ledger | Login</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(0, 255, 170, 0.12), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(0, 200, 140, 0.08), transparent 30%),
+                #07110d;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 650px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(13, 29, 22, 0.88);
+            border: 1px solid rgba(80, 255, 190, 0.12);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(20px);
+        }
+
+        /* LEFT SIDE */
+        .brand-side {
+            position: relative;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(18, 55, 40, 0.95),
+                    rgba(6, 20, 14, 0.98)
+                );
+        }
+
+        .brand-side::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(0, 255, 170, 0.08);
+            top: -100px;
+            left: -100px;
+            filter: blur(10px);
+        }
+
+        .logo {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #0cf2a0;
+            color: #062017;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            font-weight: 900;
+            box-shadow: 0 0 30px rgba(12, 242, 160, 0.25);
+        }
+
+        .logo h1 {
+            font-size: 25px;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #0cf2a0;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 22px;
+        }
+
+        .hero h2 span {
+            color: #0cf2a0;
+        }
+
+        .hero p {
+            max-width: 420px;
+            color: #a7b8b0;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* RIGHT SIDE */
+        .form-side {
+            padding: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(7, 18, 13, 0.72);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 410px;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-header .step-label {
+            display: inline-block;
+            color: #0cf2a0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .form-header h2 {
+            font-size: 29px;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #8fa49a;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce9e3;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            height: 52px;
+            border: 1px solid #263d33;
+            border-radius: 12px;
+            outline: none;
+            background: #0c1b15;
+            color: #ffffff;
+            padding: 0 15px;
+            font-size: 14px;
+            transition: 0.25s ease;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: #52665d;
+        }
+
+        input:focus {
+            border-color: #0cf2a0;
+            box-shadow: 0 0 0 3px rgba(12, 242, 160, 0.08);
+        }
+
+        input.field-error {
+            border-color: #ff5c5c;
+            box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.08);
+        }
+
+        .pin-input {
+            padding-right: 55px;
+            letter-spacing: 3px;
+        }
+
+        .phone-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #263d33;
+            border-radius: 12px;
+            background: #0c1b15;
+            transition: 0.25s ease;
+        }
+
+        .phone-wrapper:focus-within {
+            border-color: #0cf2a0;
+            box-shadow: 0 0 0 3px rgba(12, 242, 160, 0.08);
+        }
+
+        .phone-wrapper.field-error {
+            border-color: #ff5c5c;
+            box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.08);
+        }
+
+        .phone-prefix {
+            padding: 0 4px 0 15px;
+            color: #8fa49a;
+            font-size: 14px;
+            font-weight: 600;
+            border-right: 1px solid #263d33;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .phone-input {
+            border: none !important;
+            background: transparent !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .toggle-pin {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #71877c;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .toggle-pin:hover {
+            color: #0cf2a0;
+        }
+
+        .create-btn {
+            width: 100%;
+            height: 53px;
+            border: none;
+            border-radius: 13px;
+            background: #0cf2a0;
+            color: #052017;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s ease;
+            margin-top: 6px;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(12, 242, 160, 0.18);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        .create-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .message.error {
+            display: block;
+            color: #ff8f8f;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.15);
+        }
+
+        .message.success {
+            display: block;
+            color: #0cf2a0;
+            background: rgba(12, 242, 160, 0.08);
+            border: 1px solid rgba(12, 242, 160, 0.15);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #71877c;
+            font-size: 13px;
+        }
+
+        .login-link a {
+            color: #0cf2a0;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .security {
+            margin-top: 28px;
+            padding-top: 18px;
+            border-top: 1px solid #1c3028;
+            text-align: center;
+            color: #596e64;
+            font-size: 11px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+            .page {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+
+            .brand-side {
+                min-height: 260px;
+                padding: 35px;
+            }
+
+            .hero h2 {
+                font-size: 38px;
+            }
+
+            .form-side {
+                padding: 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .page {
+                border-radius: 20px;
+            }
+
+            .brand-side,
+            .form-side {
+                padding: 28px 22px;
+            }
+
+            .hero h2 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page">
+
+        <!-- BRAND SECTION -->
+        <section class="brand-side">
+
+            <div class="logo">
+                <div class="logo-icon">I</div>
+                <h1>Ingenzi <span>Ledger</span></h1>
+            </div>
+
+            <div class="hero">
+                <h2>
+                    Welcome<br>
+                    <span>back.</span>
+                </h2>
+
+                <p>Log in to keep growing your Ingenzi Score.</p>
+            </div>
+
+        </section>
+
+
+        <!-- FORM SECTION -->
+        <section class="form-side">
+
+            <div class="form-container">
+
+                <form id="loginForm" novalidate>
+
+                    <div class="form-header">
+                        <span class="step-label">Login</span>
+                        <h2>Sign in to your account</h2>
+                        <p>Enter your phone number and PIN.</p>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="telNumber">Phone Number</label>
+                        <div class="input-wrapper phone-wrapper">
+                            <span class="phone-prefix">+250</span>
+                            <input type="tel" id="telNumber" class="phone-input" placeholder="7XX XXX XXX" maxlength="9" inputmode="numeric" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="pin">PIN</label>
+                        <div class="input-wrapper">
+                            <input
+                                type="password"
+                                id="pin"
+                                class="pin-input"
+                                placeholder="••••"
+                                maxlength="4"
+                                inputmode="numeric"
+                                required
+                            >
+                            <button type="button" class="toggle-pin" onclick="togglePin('pin', this)">SHOW</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="create-btn" id="loginBtn">
+                        Log In
+                    </button>
+
+                    <div id="message" class="message"></div>
+
+                </form>
+
+                <div class="login-link">
+                    Don't have an account?
+                    <a href="index.html">Register</a>
+                </div>
+
+                <div class="security">
+                    🔒 Your business information is securely protected.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/api.js"></script>
+    <script>
+
+        // ===== REMEMBER THIS DEVICE =====
+        // If this browser already has a valid session, skip straight to
+        // the app instead of asking the person to log in again.
+        (function autoLoginIfRemembered() {
+            if (!isLoggedIn()) return;
+            apiMe()
+                .then(({ user }) => {
+                    setSession(getToken(), user);
+                    window.location.href = 'middlepage.html';
+                })
+                .catch(() => {
+                    clearSession();
+                });
+        })();
+
+        const form = document.getElementById('loginForm');
+        const message = document.getElementById('message');
+        const loginBtn = document.getElementById('loginBtn');
+        const telInput = document.getElementById('telNumber');
+        const pinInput = document.getElementById('pin');
+
+        telInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 9);
+        });
+
+        pinInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        function togglePin(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'HIDE';
+            } else {
+                input.type = 'password';
+                button.textContent = 'SHOW';
+            }
+        }
+
+        function clearMessage() {
+            message.className = 'message';
+            message.textContent = '';
+        }
+
+        function showError(text) {
+            message.className = 'message error';
+            message.textContent = '⚠ ' + text;
+        }
+
+        form.addEventListener('input', function (event) {
+            if (event.target.classList.contains('field-error')) {
+                event.target.classList.remove('field-error');
+            }
+            if (event.target.id === 'telNumber') {
+                const phoneWrapper = document.querySelector('.phone-wrapper');
+                if (phoneWrapper) phoneWrapper.classList.remove('field-error');
+            }
+        });
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            clearMessage();
+
+            const digits = telInput.value.trim();
+            const pin = pinInput.value.trim();
+            const phoneWrapper = document.querySelector('.phone-wrapper');
+
+            let hasError = false;
+
+            if (digits.length !== 9) {
+                showError('Phone Number must be exactly 9 digits after +250.');
+                if (phoneWrapper) phoneWrapper.classList.add('field-error');
+                hasError = true;
+            }
+
+            if (pin.length !== 4) {
+                if (!hasError) showError('Your PIN must contain exactly 4 digits.');
+                pinInput.classList.add('field-error');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            const telNumber = '+250' + digits;
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in…';
+
+            try {
+                const { token, user } = await apiLogin(telNumber, pin);
+                setSession(token, user);
+
+                message.className = 'message success';
+                message.textContent = '✓ Welcome back! Redirecting…';
+
+                setTimeout(() => {
+                    window.location.href = 'middlepage.html';
+                }, 700);
+            } catch (err) {
+                showError(err.data && err.data.error ? err.data.error : 'Login failed. Please try again.');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Log In';
+            }
+        });
+
+    </script>
+
+</body>
+</html>

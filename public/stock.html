@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ingenzi Ledger — Stock Entry</title>
+<style>
+  :root{
+    --bg: #060a08;
+    --panel: #0c1512;
+    --panel-border: #16241d;
+    --row-border: #12201a;
+    --text-dim: #7c8d84;
+    --text: #f2f5f3;
+    --mint: #34e0a1;
+    --mint-soft: rgba(52,224,161,0.12);
+    --red: #e05a4e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(52,224,161,0.05), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(52,224,161,0.04), transparent 40%);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--text);
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--panel-border);
+    background: var(--bg);
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 24px;
+  }
+
+  .brand h2{
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.2px;
+  }
+
+  .lang-toggle{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+  }
+
+  .lang-pill{
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+
+  .lang-pill.inactive{
+    background: #1a2620;
+    color: var(--text-dim);
+  }
+
+  .lang-pill.inactive:hover{
+    background: #212f28;
+  }
+
+  .lang-pill.active{
+    background: var(--mint);
+    color: #05130c;
+  }
+
+  .datetime{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    font-size: 13px;
+    color: #b8c2bd;
+    font-family: inherit;
+  }
+
+  .datetime .time{
+    color: var(--text);
+    font-weight: 700;
+    font-family: 'Consolas', 'Courier New', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+
+  /* PROFILE ICON */
+  .profile-wrap { position: relative; }
+  .profile-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--mint-soft);
+    border: 1px solid rgba(52,224,161,0.35);
+    color: var(--mint);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-family: inherit;
+    font-size: 13px; font-weight: 700;
+    transition: all 0.2s;
+    padding: 0;
+  }
+  .profile-btn:hover { background: rgba(52,224,161,0.2); border-color: rgba(52,224,161,0.6); }
+  .profile-btn svg { width: 16px; height: 16px; }
+
+  .profile-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 300px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 200;
+    overflow: hidden;
+  }
+  .profile-panel.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .profile-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px; border-bottom: 1px solid var(--panel-border);
+    background: #0a140f;
+  }
+  .profile-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(52,224,161,0.15);
+    border: 1px solid rgba(52,224,161,0.4);
+    color: var(--mint);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
+  }
+  .profile-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .profile-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .profile-section {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .profile-section:last-of-type { border-bottom: none; }
+  .profile-section-title {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .profile-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 5px 0; font-size: 12px;
+  }
+  .profile-row .label { color: var(--text-dim); }
+  .profile-row .value {
+    color: var(--text); font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 11.5px; text-align: right; max-width: 170px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .profile-footer {
+    padding: 10px 16px;
+  }
+  .profile-logout {
+    width: 100%;
+    background: rgba(220,60,60,0.12);
+    border: 1px solid rgba(220,60,60,0.35);
+    color: #f07070;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .profile-logout:hover { background: rgba(220,60,60,0.2); border-color: rgba(220,60,60,0.6); }
+
+  main{
+    display:flex;
+    justify-content:center;
+    padding: 48px 20px;
+  }
+
+  .wrap{
+    width: 100%;
+    max-width: 900px;
+  }
+
+  h1{
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  .subtitle{
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  table{
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th{
+    text-align: left;
+    font-size: 12px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  thead th:last-child,
+  tbody td:last-child{
+    text-align: right;
+  }
+
+  thead th.col-actions{
+    width: 36px;
+  }
+
+  tbody tr{
+    border-bottom: 1px solid var(--row-border);
+    transition: background .15s ease;
+  }
+
+  tbody tr:last-child{ border-bottom: none; }
+
+  tbody tr:hover{
+    background: rgba(52,224,161,0.03);
+  }
+
+  tbody td{
+    padding: 8px 18px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .cell-input{
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+
+  .cell-input::placeholder{
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .cell-input:hover{
+    border-color: var(--panel-border);
+  }
+
+  .cell-input:focus{
+    border-color: var(--mint);
+    background: var(--mint-soft);
+  }
+
+  .cell-input[type="number"]{
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .amount{
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--mint);
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+
+  .del-btn{
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 6px;
+    border-radius: 6px;
+    transition: color .15s ease, background .15s ease;
+  }
+
+  .del-btn:hover{
+    color: var(--red);
+    background: rgba(224,90,78,0.1);
+  }
+
+  tfoot td{
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--panel-border);
+  }
+
+  tfoot .total-label{
+    text-align: right;
+  }
+
+  tfoot .total-value{
+    text-align: right;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .actions{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 12px;
+  }
+
+  .actions-left{
+    display:flex;
+    gap: 10px;
+  }
+
+  button.pill{
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+
+  button.pill:hover{
+    transform: translateY(-1px);
+    border-color: rgba(52,224,161,0.35);
+  }
+
+  button.pill:active{
+    transform: translateY(0);
+  }
+
+  .add-btn{
+    color: var(--mint);
+  }
+
+  .save-btn{
+    background: var(--mint);
+    border-color: var(--mint);
+    color: #05130c;
+  }
+
+  .save-btn:hover{
+    background: #29c98e;
+  }
+
+  .toast{
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--panel);
+    border: 1px solid rgba(52,224,161,0.35);
+    color: var(--mint);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+  }
+
+  .toast.show{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media (max-width: 640px){
+    thead th, tbody td{ padding: 8px 10px; font-size: 13px; }
+    .cell-input{ padding: 7px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h2>Ingenzi Ledger</h2>
+    <div class="lang-toggle">
+      <button class="lang-pill inactive" id="langKin">KIN</button>
+      <button class="lang-pill active" id="langEng">ENG</button>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="datetime">
+      <span id="dateStr">Wednesday, August 26, 2026</span>
+      <span class="time" id="timeStr">7:58:53 PM CAT</span>
+    </div>
+
+    <div class="profile-wrap">
+      <button class="profile-btn" id="profile-btn" title="Your profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </button>
+
+      <div class="profile-panel" id="profile-panel">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profile-avatar">?</div>
+          <div>
+            <div class="profile-name" id="profile-owner-name">—</div>
+            <div class="profile-sub" id="profile-business-name">—</div>
+          </div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Personal Data</div>
+          <div class="profile-row"><span class="label">Owner Name</span><span class="value" id="p-owner">—</span></div>
+          <div class="profile-row"><span class="label">ID Number</span><span class="value" id="p-id">—</span></div>
+          <div class="profile-row"><span class="label">Phone Number</span><span class="value" id="p-phone">—</span></div>
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-section-title">Business Data</div>
+          <div class="profile-row"><span class="label">Business Name</span><span class="value" id="p-bname">—</span></div>
+          <div class="profile-row"><span class="label">Reg. Number</span><span class="value" id="p-reg">—</span></div>
+          <div class="profile-row"><span class="label">TIN Number</span><span class="value" id="p-tin">—</span></div>
+          <div class="profile-row"><span class="label">Business Type</span><span class="value" id="p-type">—</span></div>
+          <div class="profile-row"><span class="label">Location</span><span class="value" id="p-location">—</span></div>
+        </div>
+
+        <div class="profile-footer">
+          <button class="profile-logout" id="profile-logout">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <h1>Stock Entry</h1>
+  <p class="subtitle">Record what's in stock. Amount is calculated automatically. Saving takes you to Sales.</p>
+
+  <div class="panel">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Unit Price</th>
+          <th>Amount</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- rows injected by JS -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="total-label">Total</td>
+          <td class="total-value" id="grandTotal">0</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="actions">
+    <div class="actions-left">
+      <button class="pill add-btn" id="addRowBtn">+ Add a Row</button>
+    </div>
+    <button class="pill save-btn" id="saveBtn">Save &amp; Continue to Sales</button>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast">Saved</div>
+
+<script src="js/api.js"></script>
+<script>
+  requireSession();
+
+  // Live date/time (CAT = UTC+2)
+  const dateStr = document.getElementById('dateStr');
+  const timeStr = document.getElementById('timeStr');
+
+  function updateClock(){
+    const now = new Date();
+    dateStr.textContent = now.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    timeStr.textContent = now.toLocaleTimeString('en-US', {
+      hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true
+    }) + ' CAT';
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Language toggle (KIN / ENG) — hook real translations in here later
+  const langKin = document.getElementById('langKin');
+  const langEng = document.getElementById('langEng');
+
+  function setLang(active, inactive){
+    active.classList.add('active');
+    active.classList.remove('inactive');
+    inactive.classList.add('inactive');
+    inactive.classList.remove('active');
+  }
+
+  langKin.addEventListener('click', () => setLang(langKin, langEng));
+  langEng.addEventListener('click', () => setLang(langEng, langKin));
+
+  // ===== PROFILE PANEL =====
+  const ACCOUNT_STORAGE_KEY = 'ingenzi-account';
+
+  function getAccountData() {
+    try {
+      const saved = localStorage.getItem(ACCOUNT_STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      ownerName: 'Not set',
+      idNumber: '—',
+      telNumber: '—',
+      businessName: 'Not set',
+      regNumber: '—',
+      tinNumber: '—',
+      businessType: '—',
+      location: '—'
+    };
+  }
+
+  function renderProfilePanel() {
+    const acc = getAccountData();
+
+    document.getElementById('profile-owner-name').textContent = acc.ownerName || 'Not set';
+    document.getElementById('profile-business-name').textContent = acc.businessName || 'Not set';
+
+    document.getElementById('p-owner').textContent = acc.ownerName || '—';
+    document.getElementById('p-id').textContent = acc.idNumber || '—';
+    document.getElementById('p-phone').textContent = acc.telNumber || '—';
+
+    document.getElementById('p-bname').textContent = acc.businessName || '—';
+    document.getElementById('p-reg').textContent = acc.regNumber || '—';
+    document.getElementById('p-tin').textContent = acc.tinNumber || '—';
+    document.getElementById('p-type').textContent = acc.businessType
+      ? acc.businessType.charAt(0).toUpperCase() + acc.businessType.slice(1)
+      : '—';
+    document.getElementById('p-location').textContent = acc.location || '—';
+
+    const initial = (acc.ownerName || '?').trim().charAt(0).toUpperCase() || '?';
+    document.getElementById('profile-avatar').textContent = initial;
+  }
+
+  renderProfilePanel();
+  apiMe().then(({ user }) => {
+    setSession(getToken(), user);
+    renderProfilePanel();
+  }).catch(() => { /* fall back silently to cached localStorage data */ });
+
+  const profileBtn = document.getElementById('profile-btn');
+  const profilePanel = document.getElementById('profile-panel');
+
+  profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    profilePanel.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!profilePanel.contains(e.target) && e.target !== profileBtn) {
+      profilePanel.classList.remove('open');
+    }
+  });
+
+  document.getElementById('profile-logout').addEventListener('click', () => {
+    clearSession();
+    window.location.href = 'index.html';
+  });
+
+  const tableBody = document.getElementById('tableBody');
+  const grandTotalEl = document.getElementById('grandTotal');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const saveBtn = document.getElementById('saveBtn');
+  const toast = document.getElementById('toast');
+
+  const fmt = n => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+
+  function createRow(){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="cell-input product" type="text" placeholder="Product name"></td>
+      <td><input class="cell-input qty" type="number" min="0" step="any" placeholder="0"></td>
+      <td><input class="cell-input price" type="number" min="0" step="any" placeholder="0"></td>
+      <td class="amount">0</td>
+      <td><button class="del-btn" title="Remove row">&times;</button></td>
+    `;
+    tableBody.appendChild(tr);
+    bindRow(tr);
+  }
+
+  function bindRow(tr){
+    const qtyInput = tr.querySelector('.qty');
+    const priceInput = tr.querySelector('.price');
+    const amountCell = tr.querySelector('.amount');
+    const delBtn = tr.querySelector('.del-btn');
+
+    function recalc(){
+      const qty = parseFloat(qtyInput.value) || 0;
+      const price = parseFloat(priceInput.value) || 0;
+      const amount = qty * price;
+      amountCell.textContent = fmt(amount);
+      updateGrandTotal();
+    }
+
+    qtyInput.addEventListener('input', recalc);
+    priceInput.addEventListener('input', recalc);
+
+    delBtn.addEventListener('click', () => {
+      tr.remove();
+      updateGrandTotal();
+    });
+  }
+
+  function updateGrandTotal(){
+    let total = 0;
+    tableBody.querySelectorAll('tr').forEach(tr => {
+      const qty = parseFloat(tr.querySelector('.qty').value) || 0;
+      const price = parseFloat(tr.querySelector('.price').value) || 0;
+      total += qty * price;
+    });
+    grandTotalEl.textContent = fmt(total);
+  }
+
+  // seed with 10 empty rows
+  for (let i = 0; i < 10; i++) createRow();
+
+  addRowBtn.addEventListener('click', () => createRow());
+
+  const STOCK_STORAGE_KEY = 'ingenzi-stock-records';
+
+  saveBtn.addEventListener('click', async () => {
+    const rows = [];
+    tableBody.querySelectorAll('tr').forEach(tr => {
+      const product = tr.querySelector('.product').value.trim();
+      const qty = parseFloat(tr.querySelector('.qty').value) || 0;
+      const price = parseFloat(tr.querySelector('.price').value) || 0;
+      if (product || qty || price) {
+        rows.push({ product, quantity: qty, unitPrice: price, amount: qty * price });
+      }
+    });
+
+    if (!rows.length) {
+      toast.textContent = 'Add at least one stock entry before saving.';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+      return;
+    }
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    // 1) Persist locally so the SALES gate on the middle page can
+    //    immediately see stock has been recorded, even before the
+    //    network call below resolves.
+    try {
+      localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(rows));
+      localStorage.setItem(STOCK_STORAGE_KEY + '-savedAt', new Date().toISOString());
+    } catch (e) {
+      console.error('Could not save stock to localStorage:', e);
+    }
+
+    // 2) Save to the real database. Only rows with a product name and a
+    //    positive quantity are sent — matches what the backend expects.
+    const validRows = rows.filter(r => r.product && r.quantity > 0);
+
+    try {
+      if (validRows.length > 0) {
+        await apiSaveStock(validRows);
+      }
+      toast.textContent = 'Stock saved! Redirecting to Sales…';
+      toast.classList.add('show');
+      setTimeout(() => { window.location.href = 'sales.html'; }, 1000);
+    } catch (err) {
+      toast.textContent = err.data && err.data.error ? err.data.error : 'Could not save stock. Please try again.';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save & Continue to Sales';
+    }
+  });
+</script>
+
+</body>
+</html>

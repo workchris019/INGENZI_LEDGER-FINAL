@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingenzi Ledger | Create Account</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(0, 255, 170, 0.12), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(0, 200, 140, 0.08), transparent 30%),
+                #07110d;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1050px;
+            min-height: 650px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(13, 29, 22, 0.88);
+            border: 1px solid rgba(80, 255, 190, 0.12);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(20px);
+        }
+
+        /* LEFT SIDE */
+        .brand-side {
+            position: relative;
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(18, 55, 40, 0.95),
+                    rgba(6, 20, 14, 0.98)
+                );
+        }
+
+        .brand-side::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(0, 255, 170, 0.08);
+            top: -100px;
+            left: -100px;
+            filter: blur(10px);
+        }
+
+        .logo {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #0cf2a0;
+            color: #062017;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            font-weight: 900;
+            box-shadow: 0 0 30px rgba(12, 242, 160, 0.25);
+        }
+
+        .logo h1 {
+            font-size: 25px;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #0cf2a0;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 22px;
+        }
+
+        .hero h2 span {
+            color: #0cf2a0;
+        }
+
+        .hero p {
+            max-width: 420px;
+            color: #a7b8b0;
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        /* STEP TRACKER (left side) */
+        .steps-tracker {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 13px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #6c8078;
+            font-size: 14px;
+            transition: color 0.25s ease;
+        }
+
+        .step-item.active {
+            color: #e7f3ee;
+        }
+
+        .step-item.done {
+            color: #b8c8c1;
+        }
+
+        .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            color: #6c8078;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: 0.25s ease;
+        }
+
+        .step-item.active .step-num {
+            background: rgba(12, 242, 160, 0.12);
+            color: #0cf2a0;
+            border-color: rgba(12, 242, 160, 0.4);
+        }
+
+        .step-item.done .step-num {
+            background: #0cf2a0;
+            color: #062017;
+            border-color: #0cf2a0;
+        }
+
+        /* RIGHT SIDE */
+        .form-side {
+            padding: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(7, 18, 13, 0.72);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 410px;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-header .step-label {
+            display: inline-block;
+            color: #0cf2a0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .form-header h2 {
+            font-size: 29px;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #8fa49a;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #dce9e3;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input, select {
+            width: 100%;
+            height: 52px;
+            border: 1px solid #263d33;
+            border-radius: 12px;
+            outline: none;
+            background: #0c1b15;
+            color: #ffffff;
+            padding: 0 15px;
+            font-size: 14px;
+            transition: 0.25s ease;
+            font-family: inherit;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371877c' stroke-width='2'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: #0c1b15;
+            color: #ffffff;
+        }
+
+        input::placeholder {
+            color: #52665d;
+        }
+
+        input:focus, select:focus {
+            border-color: #0cf2a0;
+            box-shadow: 0 0 0 3px rgba(12, 242, 160, 0.08);
+        }
+
+        input.field-error, select.field-error {
+            border-color: #ff5c5c;
+            box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.08);
+        }
+
+        .pin-input {
+            padding-right: 55px;
+            letter-spacing: 3px;
+        }
+
+        .phone-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #263d33;
+            border-radius: 12px;
+            background: #0c1b15;
+            transition: 0.25s ease;
+        }
+
+        .phone-wrapper:focus-within {
+            border-color: #0cf2a0;
+            box-shadow: 0 0 0 3px rgba(12, 242, 160, 0.08);
+        }
+
+        .phone-wrapper.field-error {
+            border-color: #ff5c5c;
+            box-shadow: 0 0 0 3px rgba(255, 60, 60, 0.08);
+        }
+
+        .phone-prefix {
+            padding: 0 4px 0 15px;
+            color: #8fa49a;
+            font-size: 14px;
+            font-weight: 600;
+            border-right: 1px solid #263d33;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .phone-input {
+            border: none !important;
+            background: transparent !important;
+            padding-left: 0 !important;
+            box-shadow: none !important;
+        }
+
+        .toggle-pin {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #71877c;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .toggle-pin:hover {
+            color: #0cf2a0;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .back-btn {
+            flex: 0 0 auto;
+            width: 52px;
+            height: 53px;
+            border: 1px solid #263d33;
+            border-radius: 13px;
+            background: transparent;
+            color: #a7b8b0;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .back-btn:hover {
+            border-color: #0cf2a0;
+            color: #0cf2a0;
+        }
+
+        .create-btn {
+            flex: 1;
+            width: 100%;
+            height: 53px;
+            border: none;
+            border-radius: 13px;
+            background: #0cf2a0;
+            color: #052017;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(12, 242, 160, 0.18);
+        }
+
+        .create-btn:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .message.error {
+            display: block;
+            color: #ff8f8f;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.15);
+        }
+
+        .message.success {
+            display: block;
+            color: #0cf2a0;
+            background: rgba(12, 242, 160, 0.08);
+            border: 1px solid rgba(12, 242, 160, 0.15);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #71877c;
+            font-size: 13px;
+        }
+
+        .login-link a {
+            color: #0cf2a0;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .security {
+            margin-top: 28px;
+            padding-top: 18px;
+            border-top: 1px solid #1c3028;
+            text-align: center;
+            color: #596e64;
+            font-size: 11px;
+        }
+
+        /* FORM STEP PANELS */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+            .page {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+
+            .brand-side {
+                min-height: 300px;
+                padding: 35px;
+            }
+
+            .hero h2 {
+                font-size: 38px;
+            }
+
+            .steps-tracker {
+                display: none;
+            }
+
+            .form-side {
+                padding: 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .page {
+                border-radius: 20px;
+            }
+
+            .brand-side,
+            .form-side {
+                padding: 28px 22px;
+            }
+
+            .hero h2 {
+                font-size: 34px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="page">
+
+        <!-- BRAND SECTION -->
+        <section class="brand-side">
+
+            <div class="logo">
+                <div class="logo-icon">I</div>
+                <h1>Ingenzi <span>Ledger</span></h1>
+            </div>
+
+            <div class="hero">
+                <h2>
+                    Make your business<br>
+                    <span>bankable.</span>
+                </h2>
+
+                <p>
+                    Record your daily business transactions, understand
+                    your performance and build a stronger financial profile
+                    with Ingenzi Ledger.
+                </p>
+            </div>
+
+            <div class="steps-tracker" id="stepsTracker">
+
+                <div class="step-item active" data-step="1">
+                    <div class="step-num">1</div>
+                    <span>Personal Data</span>
+                </div>
+
+                <div class="step-item" data-step="2">
+                    <div class="step-num">2</div>
+                    <span>Business Data</span>
+                </div>
+
+                <div class="step-item" data-step="3">
+                    <div class="step-num">3</div>
+                    <span>Create PIN</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FORM SECTION -->
+        <section class="form-side">
+
+            <div class="form-container">
+
+                <form id="accountForm" novalidate>
+
+                    <!-- ================= STEP 1 : PERSONAL DATA ================= -->
+                    <div class="form-step active" data-step="1">
+
+                        <div class="form-header">
+                            <span class="step-label">Step 1 of 3</span>
+                            <h2>Personal details</h2>
+                            <p>Tell us a bit about yourself.</p>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="ownerName">Owner Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="ownerName" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="idNumber">ID Number</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="idNumber" placeholder="Enter your 16-digit ID number" maxlength="16" inputmode="numeric" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="telNumber">Phone Number</label>
+                            <div class="input-wrapper phone-wrapper">
+                                <span class="phone-prefix">+250</span>
+                                <input type="tel" id="telNumber" class="phone-input" placeholder="7XX XXX XXX" maxlength="9" inputmode="numeric" required>
+                            </div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button type="button" class="create-btn next-btn" data-next="2">
+                                Continue
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= STEP 2 : BUSINESS DATA ================= -->
+                    <div class="form-step" data-step="2">
+
+                        <div class="form-header">
+                            <span class="step-label">Step 2 of 3</span>
+                            <h2>Business details</h2>
+                            <p>Tell us about your business.</p>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="businessName">Business Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="businessName" placeholder="Enter your business name" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="regNumber">Business Registration Number</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="regNumber" placeholder="Enter 9-digit registration number" maxlength="9" inputmode="numeric" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="tinNumber">TIN Number</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="tinNumber" placeholder="Enter 9-digit TIN number" maxlength="9" inputmode="numeric" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="businessType">Business Type</label>
+                            <div class="input-wrapper">
+                                <select id="businessType" required>
+                                    <option value="" disabled selected>Select business type</option>
+                                    <option value="retail">Retail</option>
+                                    <option value="wholesale">Wholesale</option>
+                                    <option value="services">Services</option>
+                                    <option value="manufacturing">Manufacturing</option>
+                                    <option value="agriculture">Agriculture</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="location">Location</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="location" placeholder="District, Sector" required>
+                            </div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button type="button" class="back-btn" data-back="1">&#8592;</button>
+                            <button type="button" class="create-btn next-btn" data-next="3">
+                                Continue
+                            </button>
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= STEP 3 : CREATE PIN ================= -->
+                    <div class="form-step" data-step="3">
+
+                        <div class="form-header">
+                            <span class="step-label">Step 3 of 3</span>
+                            <h2>Secure your account</h2>
+                            <p>Choose a 4-digit PIN to protect your account.</p>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="pin">Create PIN</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="password"
+                                    id="pin"
+                                    class="pin-input"
+                                    placeholder="••••"
+                                    maxlength="4"
+                                    inputmode="numeric"
+                                    required
+                                >
+                                <button type="button" class="toggle-pin" onclick="togglePin('pin', this)">SHOW</button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="confirmPin">Confirm PIN</label>
+                            <div class="input-wrapper">
+                                <input
+                                    type="password"
+                                    id="confirmPin"
+                                    class="pin-input"
+                                    placeholder="••••"
+                                    maxlength="4"
+                                    inputmode="numeric"
+                                    required
+                                >
+                                <button type="button" class="toggle-pin" onclick="togglePin('confirmPin', this)">SHOW</button>
+                            </div>
+                        </div>
+
+                        <div class="terms" style="display:flex; gap:9px; align-items:flex-start; margin: 5px 0 22px; color:#71877c; font-size:12px; line-height:1.5;">
+                            <input type="checkbox" id="terms" style="width:15px; height:15px; margin-top:2px; accent-color:#0cf2a0;" required>
+                            <span>
+                                I agree to the Ingenzi Ledger
+                                <a href="#" style="color:#0cf2a0; text-decoration:none;">Terms of Service</a>
+                                and
+                                <a href="#" style="color:#0cf2a0; text-decoration:none;">Privacy Policy</a>.
+                            </span>
+                        </div>
+
+                        <div class="btn-row">
+                            <button type="button" class="back-btn" data-back="2">&#8592;</button>
+                            <button type="submit" class="create-btn">
+                                Create Ingenzi Account
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div id="message" class="message"></div>
+
+                </form>
+
+                <div class="login-link">
+                    Already have an account?
+                    <a href="login.html">Login</a>
+                </div>
+
+                <div class="security">
+                    🔒 Your business information is securely protected.
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="js/api.js"></script>
+    <script>
+
+        // ===== REMEMBER THIS DEVICE =====
+        // If this browser already has a valid session (a previous
+        // registration or login on this device), skip the form entirely
+        // and go straight to the app — this is what makes the site feel
+        // like it "already knows" a returning device.
+        (function autoLoginIfRemembered() {
+            if (!isLoggedIn()) return;
+            apiMe()
+                .then(({ user }) => {
+                    setSession(getToken(), user);
+                    window.location.href = 'middlepage.html';
+                })
+                .catch(() => {
+                    // Token expired/invalid — clear it and let the person register/login again.
+                    clearSession();
+                });
+        })();
+
+        const form = document.getElementById("accountForm");
+        const message = document.getElementById("message");
+        const stepPanels = document.querySelectorAll(".form-step");
+        const trackerItems = document.querySelectorAll(".step-item");
+
+        let currentStep = 1;
+
+
+        // Only allow numbers in ID and PIN fields
+        document.getElementById("idNumber").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+        });
+
+        document.getElementById("telNumber").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "").slice(0, 9);
+        });
+
+        document.getElementById("regNumber").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+        });
+
+        document.getElementById("tinNumber").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+        });
+
+        document.getElementById("pin").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+        });
+
+        document.getElementById("confirmPin").addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "");
+        });
+
+
+        // Show / Hide PIN
+        function togglePin(inputId, button) {
+
+            const input = document.getElementById(inputId);
+
+            if (input.type === "password") {
+                input.type = "text";
+                button.textContent = "HIDE";
+            } else {
+                input.type = "password";
+                button.textContent = "SHOW";
+            }
+        }
+
+
+        // Clear message + field-error highlights
+        function clearMessage() {
+            message.className = "message";
+            message.textContent = "";
+        }
+
+        function showError(text) {
+            message.className = "message error";
+            message.textContent = "⚠ " + text;
+        }
+
+
+        // Go to a given step (updates panels + left-side tracker)
+        function goToStep(stepNumber) {
+
+            currentStep = stepNumber;
+
+            stepPanels.forEach(panel => {
+                panel.classList.toggle("active", panel.dataset.step === String(stepNumber));
+            });
+
+            trackerItems.forEach(item => {
+                const itemStep = Number(item.dataset.step);
+                item.classList.remove("active", "done");
+
+                if (itemStep === stepNumber) {
+                    item.classList.add("active");
+                } else if (itemStep < stepNumber) {
+                    item.classList.add("done");
+                }
+            });
+
+            clearMessage();
+        }
+
+
+        // Validate all required fields inside a given step panel
+        function validateStep(stepNumber) {
+
+            const panel = document.querySelector('.form-step[data-step="' + stepNumber + '"]');
+            const fields = panel.querySelectorAll("input[required], select[required]");
+
+            let allFilled = true;
+            let firstInvalid = null;
+
+            fields.forEach(field => {
+
+                let isEmpty;
+
+                if (field.type === "checkbox") {
+                    isEmpty = !field.checked;
+                } else {
+                    isEmpty = field.value.trim() === "";
+                }
+
+                if (isEmpty) {
+                    allFilled = false;
+                    field.classList.add("field-error");
+                    if (!firstInvalid) firstInvalid = field;
+                } else {
+                    field.classList.remove("field-error");
+                }
+            });
+
+            if (!allFilled) {
+                showError("Please Fill all Fields");
+                if (firstInvalid) firstInvalid.focus();
+                return false;
+            }
+
+            // Extra rules for specific steps
+            if (stepNumber === 1) {
+
+                const idNumber = document.getElementById("idNumber").value.trim();
+                const telNumber = document.getElementById("telNumber").value.trim();
+                const phoneWrapper = document.querySelector(".phone-wrapper");
+
+                if (idNumber.length !== 16) {
+                    showError("ID Number must be exactly 16 digits.");
+                    document.getElementById("idNumber").classList.add("field-error");
+                    return false;
+                }
+
+                if (telNumber.length !== 9) {
+                    showError("Phone Number must be exactly 9 digits after +250.");
+                    if (phoneWrapper) phoneWrapper.classList.add("field-error");
+                    document.getElementById("telNumber").focus();
+                    return false;
+                } else if (phoneWrapper) {
+                    phoneWrapper.classList.remove("field-error");
+                }
+            }
+
+            if (stepNumber === 2) {
+
+                const regNumber = document.getElementById("regNumber").value.trim();
+                const tinNumber = document.getElementById("tinNumber").value.trim();
+
+                if (regNumber.length !== 9) {
+                    showError("Business Registration Number must be exactly 9 digits.");
+                    document.getElementById("regNumber").classList.add("field-error");
+                    return false;
+                }
+
+                if (tinNumber.length !== 9) {
+                    showError("TIN Number must be exactly 9 digits.");
+                    document.getElementById("tinNumber").classList.add("field-error");
+                    return false;
+                }
+            }
+
+            if (stepNumber === 3) {
+
+                const pin = document.getElementById("pin").value;
+                const confirmPin = document.getElementById("confirmPin").value;
+
+                if (pin.length !== 4) {
+                    showError("Your PIN must contain exactly 4 digits.");
+                    document.getElementById("pin").classList.add("field-error");
+                    return false;
+                }
+
+                if (pin !== confirmPin) {
+                    showError("PINs do not match.");
+                    document.getElementById("confirmPin").classList.add("field-error");
+                    return false;
+                }
+            }
+
+            clearMessage();
+            return true;
+        }
+
+
+        // Remove the red outline as soon as the user starts fixing a field
+        form.addEventListener("input", function (event) {
+            if (event.target.classList.contains("field-error")) {
+                event.target.classList.remove("field-error");
+            }
+            if (event.target.id === "telNumber") {
+                const phoneWrapper = document.querySelector(".phone-wrapper");
+                if (phoneWrapper) phoneWrapper.classList.remove("field-error");
+            }
+        });
+
+
+        // Next buttons
+        document.querySelectorAll(".next-btn").forEach(button => {
+            button.addEventListener("click", function () {
+
+                if (!validateStep(currentStep)) return;
+
+                const nextStep = Number(this.dataset.next);
+                goToStep(nextStep);
+            });
+        });
+
+
+        // Back buttons
+        document.querySelectorAll(".back-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const backStep = Number(this.dataset.back);
+                goToStep(backStep);
+            });
+        });
+
+
+        // Final submit (step 3)
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            if (!validateStep(3)) return;
+
+            // Collect everything from all 3 steps
+            const accountData = {
+                ownerName: document.getElementById("ownerName").value.trim(),
+                idNumber: document.getElementById("idNumber").value.trim(),
+                telNumber: "+250" + document.getElementById("telNumber").value.trim(),
+                businessName: document.getElementById("businessName").value.trim(),
+                regNumber: document.getElementById("regNumber").value.trim(),
+                tinNumber: document.getElementById("tinNumber").value.trim(),
+                businessType: document.getElementById("businessType").value,
+                location: document.getElementById("location").value.trim(),
+                pin: document.getElementById("pin").value
+            };
+
+            const submitBtn = form.querySelector('.form-step[data-step="3"] .create-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Creating account…";
+            }
+
+            try {
+                const { token, user } = await apiRegister(accountData);
+
+                // Persisting the token here is what "remembers" this device —
+                // next time this browser opens index.html, autoLoginIfRemembered()
+                // above will skip straight past the form.
+                setSession(token, user);
+
+                message.className = "message success";
+                message.textContent =
+                    "✓ Account created successfully! Welcome to Ingenzi Ledger.";
+
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = "middlepage.html";
+                }, 1000);
+            } catch (err) {
+                showError(err.data && err.data.error ? err.data.error : "Could not create account. Please try again.");
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Create Ingenzi Account";
+                }
+            }
+        });
+
+
+        // Login link — for a returning person on a *different* device,
+        // or if they cleared their browser data on this one.
+        function showLogin(event) {
+
+            event.preventDefault();
+
+            const digits = prompt("Enter your phone number (9 digits, without +250):");
+            if (!digits) return;
+            const telNumber = "+250" + digits.replace(/\D/g, "").slice(0, 9);
+
+            const pin = prompt("Enter your 4-digit PIN:");
+            if (!pin) return;
+
+            apiLogin(telNumber, pin.trim())
+                .then(({ token, user }) => {
+                    setSession(token, user);
+                    window.location.href = "middlepage.html";
+                })
+                .catch(err => {
+                    alert(err.data && err.data.error ? err.data.error : "Login failed. Check your phone number and PIN.");
+                });
+        }
+
+    </script>
+
+</body>
+</html>
